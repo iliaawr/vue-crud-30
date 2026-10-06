@@ -14,6 +14,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { guest: true }
     },
     {
+    path: '/register',
+    name: 'register',
+    component: () => import('../views/register.vue'),
+    meta: { guest: true }
+},
+    {
         path: '/products',
         name: 'products',
         component: () => import('../views/products/index.vue'),
