@@ -1,34 +1,51 @@
-//import createRouter, createWebHistory and Type RouteRecordRaw from vue-router
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { isLoggedIn } from '../auth'
 
-// Define route type with explicit type annotations
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: 'home',
-        component: () => import(/* webpackChunkName: "home" */ '../views/home.vue')
+        component: () => import('../views/home.vue')
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: () => import('../views/login.vue'),
+        meta: { guest: true }
     },
     {
         path: '/products',
         name: 'products',
-        component: () => import(/* webpackChunkName: "products" */ '../views/products/index.vue')
+        component: () => import('../views/products/index.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/products/create',
         name: 'products-create',
-        component: () => import(/* webpackChunkName: "products-create" */ '../views/products/create.vue')
+        component: () => import('../views/products/create.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/products/edit/:id',
         name: 'products-edit',
-        component: () => import(/* webpackChunkName: "products-edit" */ '../views/products/edit.vue')
+        component: () => import('../views/products/edit.vue'),
+        meta: { requiresAuth: true }
     },
 ]
 
-// Create router with explicit type annotations
 const router = createRouter({
     history: createWebHistory(),
     routes
+})
+
+// Navigation guard
+router.beforeEach((to) => {
+    if (to.meta.requiresAuth && !isLoggedIn.value) {
+        return { name: 'login', query: { redirect: to.fullPath } }
+    }
+    if (to.meta.guest && isLoggedIn.value) {
+        return { name: 'products' }
+    }
 })
 
 export default router

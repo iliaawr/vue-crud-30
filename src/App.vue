@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+import Api from "./api";
+import { isLoggedIn, clearToken } from "./auth";
+
+const router = useRouter();
+
+const logout = async () => {
+    try {
+        await Api.post("/api/auth/logout");
+    } catch (error) {
+        console.error("Logout error:", error);
+    } finally {
+        clearToken();
+        router.push({ name: "login" });
+    }
+};
+</script>
+
 <template>
   <div>
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
@@ -13,15 +32,16 @@
               <router-link to="/products" class="nav-link active" aria-current="page">PRODUCTS</router-link>
             </li>
           </ul>
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0" role="search">
-            <a href="https://santrikoding.com" target="_blank" class="btn btn-success">SANTRIKODING.COM</a>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <button v-if="isLoggedIn" @click="logout" class="btn btn-danger">LOGOUT</button>
+              <router-link v-else to="/login" class="btn btn-success">LOGIN</router-link>
+            </li>
           </ul>
         </div>
       </div>
     </nav>
 
-    <!--- render router view -->
     <router-view />
-
   </div>
 </template>
